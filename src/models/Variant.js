@@ -3,7 +3,8 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   const Variant = sequelize.define('Variant', {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.UUID,
+      default: DataTypes.UUIDV4,
       primaryKey: true,
       allowNull: false,
     },
