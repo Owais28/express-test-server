@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const jwt = require('jsonwebtoken');
+
 require('dotenv').config()
 
 var indexRouter = require('./routes/index');
@@ -26,6 +28,25 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products', productsRouter)
 app.use('/variants', variantRouter)
+
+app.post('/api/token', (req, res) => {
+  const { userId, username } = req.body
+  try {
+    if (!(userId && username)) {
+      res.status(404)
+    }
+
+    const payload = { userId, username };
+    const secretKey = 'testsecret12345';
+
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.error('Error generating token:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
