@@ -133,3 +133,5 @@ dist
 #express
 *.jsonl
 test.json
+
+package-lock.json
