@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit')
 
 require('dotenv').config()
 
@@ -22,6 +23,17 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: 'Too many requests from this IP, please try again after some time.',
+  max: 2
+})
+
+app.use(limiter)
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
