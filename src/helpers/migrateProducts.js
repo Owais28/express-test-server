@@ -21,6 +21,7 @@ async function migrateProducts() {
     products.push({
       id: uuid,
       title: jsonData.title,
+      queryableTitle: jsonData.title.toLowerCase(),
       description: jsonData.description,
       vendor: jsonData.vendor,
     });

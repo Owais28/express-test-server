@@ -1,4 +1,5 @@
 const { Product, Variant } = require('../models/index'); // Assuming you have a Product model
+const { v1: uuidv1 } = require("uuid")
 
 const getProductVaraints = async (products) => {
 
@@ -13,6 +14,15 @@ const getProductVaraints = async (products) => {
   }));
 
   return result;
+}
+
+const getProductByIdVariants = async (product) => {
+  const parsedProduct = JSON.parse(JSON.stringify(product))
+
+  const variants = await Variant.findAll({ where: { productId: parsedProduct.id } })
+  parsedProduct.variants = JSON.parse(JSON.stringify(variants));
+
+  return parsedProduct
 }
 
 exports.getProducts = async (req, res) => {
@@ -50,12 +60,26 @@ exports.getProductById = async (req, res) => {
     }
 
     // Send the product as a JSON response
-    res.json(product);
+    res.json({ success: true, data: await getProductByIdVariants(product) });
   } catch (error) {
     console.error(`Error fetching product with ID ${productId}:`, error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
+// Helper function to generate a product handle from the title
+function generateProductHandle(title) {
+  // Implement your logic to generate a handle (e.g., lowercase and replace spaces with dashes)
+  const handle = title.toLowerCase().replace(/\s+/g, '-');
+  return handle;
+}
+
+// Helper function to format the product title
+function formatProductTitle(title) {
+  const formattedTitle = title.replace(/-/g, ' ');
+  return formattedTitle
+}
 
 exports.getProductByTitle = async (req, res) => {
   try {
@@ -65,7 +89,10 @@ exports.getProductByTitle = async (req, res) => {
       return res.status(400).json({ error: 'Product title is required' });
     }
 
-    const product = await Product.findOne({ where: { title } });
+    // Transform the provided format to the desired format
+    const formattedTitle = formatProductTitle(title);
+
+    const product = await Product.findOne({ where: { queryableTitle: formattedTitle } });
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
@@ -84,12 +111,30 @@ exports.createProduct = async (req, res) => {
     // Extract product data from the request body
     const { title, description, vendor } = req.body;
 
-    // Create a new product in the database
-    const newProduct = await Product.create({
-      title,
-      description,
-      vendor,
-    });
+    let newProduct;
+    let attempts = 0;
+
+    do {
+      // Generate a new ID
+      const id = uuidv1();
+
+      // Check if the generated ID already exists in the database
+      const existingProduct = await Product.findOne({ where: { id } });
+
+      if (!existingProduct) {
+        // If the ID is unique, create a new product
+        newProduct = await Product.create({
+          id,
+          title,
+          description,
+          vendor,
+        });
+      }
+
+      attempts++;
+
+      // Continue the loop until a unique ID is generated or maximum attempts reached
+    } while (!newProduct && attempts > 0);
 
     // Send the newly created product as a JSON response
     res.status(201).json(newProduct);
@@ -104,10 +149,10 @@ exports.updateProduct = async (req, res) => {
   try {
     // Extract product data from the request body
     const { title, description, vendor } = req.body;
-    const productId = req.params.productId;
+    const productId = req.params.id;
 
     // Check if the product with the given ID exists
-    const existingProduct = await Product.findByPk(productId);
+    const existingProduct = await Product.findByPk(productId)
     if (!existingProduct) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -130,7 +175,7 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     // Extract product ID from the request parameters
-    const productId = req.params.productId;
+    const productId = req.params.id;
 
     // Check if the product with the given ID exists
     const existingProduct = await Product.findByPk(productId);

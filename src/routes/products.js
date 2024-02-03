@@ -6,7 +6,7 @@ const ProductController = require('../controllers/productController');
 router.get('/', ProductController.getProducts);
 
 // GET product by ID
-router.get('/:id', ProductController.getProductById);
+// router.get('/:id', ProductController.getProductById);
 
 // POST create a new product
 router.post('/', ProductController.createProduct);
