@@ -1,4 +1,19 @@
-const Product = require('../models/Product'); // Assuming you have a Product model
+const { Product, Variant } = require('../models/index'); // Assuming you have a Product model
+
+const getProductVaraints = async (products) => {
+
+  const JSONifiedProducts = JSON.stringify(products)
+  const parsedProducts = JSON.parse(JSONifiedProducts)
+
+  const result = await Promise.all(parsedProducts.map(async (product) => {
+    const newProduct = { ...product }; // Make a shallow copy to avoid modifying the original object
+    const variants = await Variant.findAll({ where: { productId: product.id } });
+    newProduct.variants = JSON.parse(JSON.stringify(variants));
+    return newProduct;
+  }));
+
+  return result;
+}
 
 exports.getProducts = async (req, res) => {
   try {
@@ -11,7 +26,10 @@ exports.getProducts = async (req, res) => {
       limit,
     });
 
-    res.json({ success: true, data: products });
+    // const productsWithVariants = await getProductVaraints(products)
+    // console.log("Result", await getProductVaraints(products))
+
+    res.json({ success: true, data: await getProductVaraints(products) });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -20,7 +38,7 @@ exports.getProducts = async (req, res) => {
 
 // get a specific product by ID
 exports.getProductById = async (req, res) => {
-  const productId = req.params.productId;
+  const productId = req.params.id;
 
   try {
     // Fetch the product by ID from the database

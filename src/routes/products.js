@@ -1,4 +1,3 @@
-// routes/products.js
 const express = require('express');
 const router = express.Router();
 const ProductController = require('../controllers/productController');
@@ -7,7 +6,7 @@ const ProductController = require('../controllers/productController');
 router.get('/', ProductController.getProducts);
 
 // GET product by ID
-// router.get('/:id', ProductController.getProductById);
+router.get('/:id', ProductController.getProductById);
 
 // POST create a new product
 router.post('/', ProductController.createProduct);
@@ -19,6 +18,6 @@ router.put('/:id', ProductController.updateProduct);
 router.delete('/:id', ProductController.deleteProduct);
 
 // GET product by title
-router.get('/:title', ProductController.getProductByTitleController);
+router.get('/:title', ProductController.getProductByTitle);
 
 module.exports = router;
