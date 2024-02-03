@@ -39,8 +39,8 @@ app.use(limiter)
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/products', productsRouter)
-app.use('/variants', variantRouter)
+app.use('/api/products', productsRouter)
+app.use('/api/variants', variantRouter)
 
 app.post('/api/token', (req, res) => {
   const { userId, username } = req.body
