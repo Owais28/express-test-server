@@ -1,7 +1,7 @@
 const { Product, Variant } = require('../models');
 const path = require('path')
 const readFileLineByLine = require('./readFileLineByLine');
-
+const { v1: uuidv1 } = require('uuid');
 const SimpleQueue = require('../helpers/SimpleQueue');
 const jsonlFilePath = path.resolve(__dirname, "../../large_products.jsonl")
 
@@ -16,10 +16,10 @@ async function migrateProducts() {
 
   readFileLineByLine(jsonlFilePath, async (line) => {
     const jsonData = JSON.parse(line);
-
+    const uuid = uuidv1()
     // Create product
     products.push({
-      id: jsonData.id,
+      id: uuid,
       title: jsonData.title,
       description: jsonData.description,
       vendor: jsonData.vendor,
@@ -28,13 +28,13 @@ async function migrateProducts() {
     // Create variants
     jsonData.variants.forEach((variantData) => {
       variants.push({
-        id: variantData.id,
+        id: uuidv1(),
         variantTitle: variantData.variantTitle,
         price: variantData.price,
         availableQuantity: variantData.availableQuantity,
         availableForSale: variantData.availableForSale,
         variantPosition: variantData.variantPosition,
-        productId: jsonData.id, // Associate variant with the product
+        productId: uuid, // Associate variant with the product
       });
     });
 
