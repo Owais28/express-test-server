@@ -2,16 +2,17 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+// var logger = require('morgan');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit')
 require('dotenv').config()
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products')
 var variantRouter = require('./routes/variants');
 const { expressLogger } = require('../winston');
+
+const port = process.env.PORT || 3000
 
 var app = express();
 
@@ -38,7 +39,6 @@ app.use(limiter)
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/products', productsRouter)
 app.use('/variants', variantRouter)
 
@@ -77,4 +77,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+// Start the server
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

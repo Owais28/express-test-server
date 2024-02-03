@@ -1,5 +1,5 @@
 const { Variant } = require('../models/index');
-
+const { v1: uuidv1 } = require('uuid')
 exports.getVariants = async (req, res) => {
   try {
 
@@ -39,15 +39,35 @@ exports.createVariant = async (req, res) => {
     // Extract variant data from the request body
     const { variantTitle, price, availableQuantity, availableForSale, variantPosition, productId } = req.body;
 
-    // Create a new variant in the database
-    const newVariant = await Variant.create({
-      variantTitle,
-      price,
-      availableQuantity,
-      availableForSale,
-      variantPosition,
-      productId,
-    });
+
+    let newVariant;
+    let attempts = 0;
+    do {
+
+      // Generate a new ID
+      const id = uuidv1();
+
+      // Check if the generated ID already exists in the database
+      const existingVariant = await Variant.findOne({ where: { id } });
+
+      if (!existingVariant) {
+
+        // Create a new variant in the database
+        newVariant = await Variant.create({
+          variantTitle,
+          price,
+          availableQuantity,
+          availableForSale,
+          variantPosition,
+          productId,
+          id
+        });
+      }
+
+      attempts++;
+
+      // Continue the loop until a unique ID is generated or maximum attempts reached
+    } while (!newVariant && attempts > 0)
 
     res.status(201).json(newVariant);
   } catch (error) {

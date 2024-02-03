@@ -68,13 +68,6 @@ exports.getProductById = async (req, res) => {
 };
 
 
-// Helper function to generate a product handle from the title
-function generateProductHandle(title) {
-  // Implement your logic to generate a handle (e.g., lowercase and replace spaces with dashes)
-  const handle = title.toLowerCase().replace(/\s+/g, '-');
-  return handle;
-}
-
 // Helper function to format the product title
 function formatProductTitle(title) {
   const formattedTitle = title.replace(/-/g, ' ');
