@@ -2,14 +2,19 @@ const Product = require('../models/Product'); // Assuming you have a Product mod
 
 exports.getProducts = async (req, res) => {
   try {
-    // Fetch all products from the database
-    const products = await Product.findAll();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 25; // Return 100 products by default
+    const offset = (page - 1) * limit;
 
-    // Send the products as a JSON response
-    res.json(products);
+    const products = await Product.findAll({
+      offset,
+      limit,
+    });
+
+    res.json({ success: true, data: products });
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
