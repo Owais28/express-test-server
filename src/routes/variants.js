@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const VariantController = require('../controllers/VariantController');
+const VariantController = require('../controllers/variantController');
 
 // GET all variants
 router.get('/', VariantController.getVariants);
@@ -12,7 +12,7 @@ router.get('/:id', VariantController.getVariantById);
 router.post('/', VariantController.createVariant);
 
 // PUT update a variant
-router.put('/:id', VariantController.updateVariantct);
+router.put('/:id', VariantController.updateVariant);
 
 // DELETE a variant
 router.delete('/:id', VariantController.deleteVariant);
