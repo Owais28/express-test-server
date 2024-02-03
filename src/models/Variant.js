@@ -28,6 +28,11 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    productId: {
+      type: DataTypes.UUID,
+      default: DataTypes.UUIDV1,
+      allowNull: false,
+    }
   });
 
   return Variant;
