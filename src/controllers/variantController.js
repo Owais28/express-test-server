@@ -1,5 +1,6 @@
 const { Variant } = require('../models/index');
 const { v1: uuidv1 } = require('uuid')
+
 exports.getVariants = async (req, res) => {
   try {
 
