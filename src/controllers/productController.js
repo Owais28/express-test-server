@@ -16,6 +16,18 @@ const getProductVaraints = async (products) => {
   return result;
 }
 
+const getProductVaraintsByTitle = async (product) => {
+  const JSONifiedProduct = JSON.stringify(product)
+  const parsedProduct = JSON.parse(JSONifiedProduct)
+
+  const variants = await Variant.findAll({ where: { productId: parsedProduct.id } })
+  parsedProduct.variants = JSON.parse(JSON.stringify(variants))
+  console.log(variants)
+
+  return parsedProduct
+
+}
+
 const getProductByIdVariants = async (product) => {
   const parsedProduct = JSON.parse(JSON.stringify(product))
 
@@ -69,10 +81,10 @@ exports.getProductById = async (req, res) => {
 
 
 // Helper function to format the product title
-function formatProductTitle(title) {
-  const formattedTitle = title.replace(/-/g, ' ');
-  return formattedTitle
-}
+// function formatProductTitle(title) {
+//   const formattedTitle = title.replace(/-/g, ' ');
+//   return formattedTitle
+// }
 
 exports.getProductByTitle = async (req, res) => {
   try {
@@ -83,15 +95,15 @@ exports.getProductByTitle = async (req, res) => {
     }
 
     // Transform the provided format to the desired format
-    const formattedTitle = formatProductTitle(title);
+    // const formattedTitle = formatProductTitle(title);
 
-    const product = await Product.findOne({ where: { queryableTitle: formattedTitle } });
+    const product = await Product.findOne({ where: { queryableTitle: title } });
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    return res.json({ product });
+    return res.json({ success: true, data: await getProductVaraintsByTitle(product) });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });

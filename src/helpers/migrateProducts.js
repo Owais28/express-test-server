@@ -21,7 +21,7 @@ async function migrateProducts() {
     products.push({
       id: uuid,
       title: jsonData.title,
-      queryableTitle: jsonData.title.toLowerCase(),
+      queryableTitle: jsonData.title.toLowerCase().replace(/\s+/g, '-'),
       description: jsonData.description,
       vendor: jsonData.vendor,
     });
