@@ -73,7 +73,7 @@ The server will be accessible at `http://localhost:3000` by default.
 - **DELETE /api/products/:id:** Delete a product by ID.
 
 
-2. Products
+2. Variants
 - **GET /api/variants:** Get a list of all variants.
 - **GET /api/variants/:id:** Get a variant by ID.
 <!-- - **GET /api/variants/:title:** Get a variant by title. -->
