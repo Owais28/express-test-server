@@ -11,7 +11,7 @@ This server provides endpoints to perform CRUD operations on products and their 
 1. **Clone the Repository:**
 
    ```bash
-   git clone https://github.com/your-username/crud-server.git
+   git clone https://github.com/Owais28/express-test-server.git
    ```
 
 2. **Install Dependencies:**
